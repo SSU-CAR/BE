@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -15,12 +17,17 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reportId;
 
-    @Column(nullable = false)
+    @Column(name = "DEPARTURED_AT", nullable = false)
     private LocalDateTime departuredAt;
 
+    @Column(name = "ARRIVED_AT", nullable = false)
     private LocalDateTime arrivedAt;
 
-    @Column(nullable = false)
-    private Float mileage = 0.0f;
+    @Column(name = "MILEAGE", nullable = false)
+    private Float mileage;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "report")
+    private List<Record> records = new ArrayList<>();
 
 }

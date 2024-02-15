@@ -15,11 +15,14 @@ public class Record {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int recordId;
 
+    @ManyToOne
+    @JoinColumn(name = "REPORT_ID")
+    private Report report;
 
-    @Column(nullable = false)
+    @Column(name = "SCENARIO_TYPE", nullable = false)
     private Integer scenarioType;
 
-    @Column(nullable = false)
+    @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt;
 
 
