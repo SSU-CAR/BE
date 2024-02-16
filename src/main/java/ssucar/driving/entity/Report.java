@@ -28,8 +28,8 @@ public class Report {
     @Column(name = "MILEAGE", nullable = false)
     private Float mileage;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "report")
-    private List<Record> records = new ArrayList<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy = "report")
+//    private List<Record> records = new ArrayList<>();
 
 }
