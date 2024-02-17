@@ -14,18 +14,16 @@ import java.util.List;
 @Builder
 public class Report {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "REPORT_ID")
     @Getter
     private int reportId;
 
-    @Column(name = "DEPARTURED_AT", nullable = false)
+    @Column(name = "DEPARTURED_AT")
     private LocalDateTime departuredAt;
-
-    @Column(name = "ARRIVED_AT", nullable = false)
+    @Column(name = "ARRIVED_AT")
     private LocalDateTime arrivedAt;
-
-    @Column(name = "MILEAGE", nullable = false)
+    @Column(name = "MILEAGE")
     private Float mileage;
 
 //    @Builder.Default

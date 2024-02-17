@@ -1,6 +1,7 @@
 package ssucar.driving.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssucar.driving.dto.DrivingDto;
@@ -18,7 +19,7 @@ public class DrivingService {
     private boolean isDriving = false;
     private int reportItems = 0;
 
-
+    @Autowired
     private final ReportRepository reportRepository;
 //    private final RecordRepository recordRepository;
 
