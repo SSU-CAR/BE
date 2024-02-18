@@ -47,6 +47,7 @@ tasks.jar {
 
 tasks.bootJar {
 	enabled = true
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 //jar {
