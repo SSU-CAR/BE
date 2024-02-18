@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name="Report")
+@Table(name="report")
 @Builder
 public class Report {
 

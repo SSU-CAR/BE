@@ -1,4 +1,4 @@
-create table Report
+create table report
 (
  report_id Int AUTO_INCREMENT PRIMARY KEY,
  departured_at TIMESTAMP,
