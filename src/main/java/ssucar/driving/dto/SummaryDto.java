@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SummaryDto {
-    //    @Positive
     private String scenarioName;
     private int scenarioCount;
 }
