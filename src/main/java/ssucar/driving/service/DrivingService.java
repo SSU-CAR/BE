@@ -41,7 +41,7 @@ public class DrivingService {
                     .arrivedAt(parsedCurrentTime)
                     .mileage(0f)
                     .build();
-            Report savedReport = reportRepository.save(newReport);  
+            Report savedReport = reportRepository.save(newReport);
             reportItems = savedReport.getReportId();
 
             return new DrivingDto.startResponse(reportItems);
@@ -63,6 +63,15 @@ public class DrivingService {
 
         findReport.getRisks().add(postRisk);
         return recordRepository.save(postRisk);
+    }
+
+
+    public void updateMileage(int type, String createdAt) {
+        Report report = findReport(reportItems);
+        Optional<Report> optionalReport = reportRepository.findById(report.getReportId());
+        Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+        fm.setMileage(Float.valueOf(createdAt));
+        reportRepository.save(fm);
     }
 
     public DrivingDto.endResponse endDriving() {
@@ -88,9 +97,6 @@ public class DrivingService {
             return new DrivingDto.endResponse(0);
         }
     }
-
-
-
 
 
     public boolean isDriving() {

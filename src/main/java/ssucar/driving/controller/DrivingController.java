@@ -34,14 +34,22 @@ public class DrivingController {
 
         boolean isDriving = drivingService.isDriving();
         if(isDriving){
+            if(scenarioType == 100){
+                drivingService.updateMileage(scenarioType, createdAt);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else if (scenarioType == 200){
+                // 속도 값 들어오는거 처리
 
-            Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else{
+                Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
 //            URI location = UriCreator.createUri(DRIVING_DEFAULT_URL, (long) postRisk.getRiskId());
-            return new ResponseEntity<>(HttpStatus.OK);
-
+                return new ResponseEntity<>(HttpStatus.OK);
 //            return ResponseEntity.created(location).build();
-        }
+            }
 
+
+        }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

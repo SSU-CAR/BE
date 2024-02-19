@@ -18,7 +18,7 @@ public class Scenario {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Getter
     private int scenarioId;
-
+    private int flag;
     private String name;
     private int weight;
     private long total;

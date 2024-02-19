@@ -32,6 +32,10 @@ public class Report {
     @OneToMany(mappedBy = "report", cascade = CascadeType.PERSIST)
     private List<Risk> risks = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "report", cascade = CascadeType.PERSIST)
+    private List<Summary> summaries = new ArrayList<>();
+
     public void setDeparturedAt(String departuredAt) {
         this.departuredAt = departuredAt;
     }
