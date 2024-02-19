@@ -110,4 +110,5 @@ jobs:
             --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip \
+            --environment-overrides '{"name":"RDS_URL","value":"${{ secrets.RDS_URL }}","type":"String"},{"name":"RDS_USERNAME","value":"${{ secrets.RDS_USERNAME }}","type":"String"},{"name":"RDS_PASSWORD","value":"${{ secrets.RDS_PASSWORD }}","type":"String"}'
