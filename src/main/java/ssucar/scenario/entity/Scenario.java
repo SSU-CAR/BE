@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Scenario {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Getter
     private int scenarioId;
 
