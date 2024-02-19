@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ssucar.driving.dto.DrivingDto;
 import ssucar.driving.entity.Report;
 import ssucar.driving.entity.Risk;
+import ssucar.driving.entity.Summary;
 import ssucar.driving.repository.RiskRepository;
 import ssucar.driving.repository.ReportRepository;
+import ssucar.driving.repository.SummaryRepository;
 import ssucar.exception.BusinessLogicException;
 import ssucar.exception.ExceptionCode;
 
@@ -28,7 +30,10 @@ public class DrivingService {
     private final ReportRepository reportRepository;
 
     @Autowired
-    private final RiskRepository recordRepository;
+    private final RiskRepository riskRepository;
+
+    @Autowired
+    private final SummaryRepository summaryRepository;
 
 
     public DrivingDto.startResponse startDriving() {
@@ -62,7 +67,27 @@ public class DrivingService {
                 .build();
 
         findReport.getRisks().add(postRisk);
-        return recordRepository.save(postRisk);
+        return riskRepository.save(postRisk);
+    }
+
+
+    public Summary updateSummary(int scenarioType) {
+        Report findReport = findReport(reportItems);
+        Summary findSummary = summaryRepository.findByReport_ReportIdAndScenarioType(findReport.getReportId(), scenarioType);
+
+        if (findSummary != null) {
+            findSummary.increaseSummaryCount();
+            return summaryRepository.save(findSummary);
+        } else {
+            Summary postSummary = Summary.builder()
+                    .scenarioType(scenarioType)
+                    .summaryCount(0)
+                    .report(findReport)
+                    .summaryCount(1)
+                    .build();
+            findReport.getSummaries().add(postSummary);
+            return summaryRepository.save(postSummary);
+        }
     }
 
 

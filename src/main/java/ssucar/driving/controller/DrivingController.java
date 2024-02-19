@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ssucar.driving.dto.DrivingDto;
 import ssucar.driving.entity.Report;
 import ssucar.driving.entity.Risk;
+import ssucar.driving.entity.Summary;
 import ssucar.driving.service.DrivingService;
 import ssucar.dto.SingleResponseDto;
 import ssucar.utils.UriCreator;
@@ -44,6 +45,7 @@ public class DrivingController {
             }else{
                 Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
 //            URI location = UriCreator.createUri(DRIVING_DEFAULT_URL, (long) postRisk.getRiskId());
+                Summary postSummary = drivingService.updateSummary(scenarioType);
                 return new ResponseEntity<>(HttpStatus.OK);
 //            return ResponseEntity.created(location).build();
             }

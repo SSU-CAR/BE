@@ -7,5 +7,5 @@ import ssucar.driving.entity.Summary;
 
 @Repository
 public interface SummaryRepository extends JpaRepository<Summary, Integer> {
-
+    Summary findByReport_ReportIdAndScenarioType(int reportId, int scenarioType);
 }
