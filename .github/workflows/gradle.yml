@@ -17,7 +17,7 @@ on:
 # 해당 코드에서 사용될 변수 설정
 env:
   AWS_REGION: ap-northeast-2
-#  PROJECT_NAME: imad-server
+  #  PROJECT_NAME: imad-server
   S3_BUCKET_NAME: ssucar-s3bucket
   CODE_DEPLOY_APP_NAME: springboot-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: springboot-codedeploy-deployment-group
@@ -41,36 +41,36 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-#      # create application.yml
-#      - name: make application-aws.yml
-#        if: contains(github.ref, 'release')
-#        run: |
-#          # spring의 resources 경로로 이동
-#          cd ./src/main/resources
-#
-#          ls -al
-#          touch ./application-aws.yml
-#
-#          # GitHub-Actions에서 설정한 값을 application-aws.yml 파일에 쓰기
-#          echo "copy properties"
-#          echo "${{ secrets.AWS_PROPERTIES }}" > ./application-aws.yml
-#        shell: bash
+      #      # create application.yml
+      #      - name: make application-aws.yml
+      #        if: contains(github.ref, 'release')
+      #        run: |
+      #          # spring의 resources 경로로 이동
+      #          cd ./src/main/resources
+      #
+      #          ls -al
+      #          touch ./application-aws.yml
+      #
+      #          # GitHub-Actions에서 설정한 값을 application-aws.yml 파일에 쓰기
+      #          echo "copy properties"
+      #          echo "${{ secrets.AWS_PROPERTIES }}" > ./application-aws.yml
+      #        shell: bash
 
-#      # create key.p8 file
-#      - name: make apple key.p8 file
-#        if: contains(github.ref, 'release')
-#        run: |
-#          # spring의 resources 경로로 이동
-#          mkdir ./src/main/resources/key
-#          cd ./src/main/resources/key
-#
-#          ls -al
-#          touch ./AuthKey.p8
-#
-#          # GitHub-Actions에서 설정한 값 파일에 쓰기
-#          echo "copy APPLE_SECRET_KEY"
-#          echo "${{ secrets.APPLE_SECRET_KEY }}" > ./AuthKey.p8
-#        shell: bash
+      #      # create key.p8 file
+      #      - name: make apple key.p8 file
+      #        if: contains(github.ref, 'release')
+      #        run: |
+      #          # spring의 resources 경로로 이동
+      #          mkdir ./src/main/resources/key
+      #          cd ./src/main/resources/key
+      #
+      #          ls -al
+      #          touch ./AuthKey.p8
+      #
+      #          # GitHub-Actions에서 설정한 값 파일에 쓰기
+      #          echo "copy APPLE_SECRET_KEY"
+      #          echo "${{ secrets.APPLE_SECRET_KEY }}" > ./AuthKey.p8
+      #        shell: bash
 
       # gradlew 파일 실행권한 설정
       - name: Grant execute permission for gradlew
@@ -81,6 +81,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean --stacktrace --info build
         shell: bash
+        env:
+          RDS_URL: ${{ secrets.RDS_URL }}
+          RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
 
       # AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
