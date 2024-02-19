@@ -14,22 +14,36 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name="report")
+@Table(name = "report")
 @Builder
 public class Report {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     private int reportId;
 
     private String departuredAt;
     private String arrivedAt;
     private Float mileage;
+    private int score;
 
     @Builder.Default
     @OneToMany(mappedBy = "report", cascade = CascadeType.PERSIST)
     private List<Risk> risks = new ArrayList<>();
 
+    public void setDeparturedAt(String departuredAt) {
+        this.departuredAt = departuredAt;
+    }
+
+
+    public void setMileage(Float mileage) {
+        this.mileage = mileage;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
 
 
 }

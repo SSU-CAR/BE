@@ -44,7 +44,7 @@ public class DrivingService {
             Report savedReport = reportRepository.save(newReport);  
             reportItems = savedReport.getReportId();
 
-            return new DrivingDto.startResponse(1);
+            return new DrivingDto.startResponse(reportItems);
         } else {
             return new DrivingDto.startResponse(0);
         }
@@ -63,6 +63,30 @@ public class DrivingService {
 
         findReport.getRisks().add(postRisk);
         return recordRepository.save(postRisk);
+    }
+
+    public DrivingDto.endResponse endDriving() {
+        if (isDriving) {
+            setDriving(false);
+            Report report = findReport(reportItems);
+            LocalDateTime currentTime = LocalDateTime.now();
+            String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+//            이거 save말고 다시 생각
+            Optional<Report> optionalReport = reportRepository.findById(report.getReportId());
+            Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+//            Optional.ofNullable(report.getMileage()).ifPresent(mileage -> fm.setMileage(report.getMileage()));
+            fm.setScore(50);
+            report.setDeparturedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            Report endedReport = reportRepository.save(fm);
+            //
+
+            reportItems = endedReport.getReportId();
+            return new DrivingDto.endResponse(reportItems);
+        } else {
+            return new DrivingDto.endResponse(0);
+        }
     }
 
 

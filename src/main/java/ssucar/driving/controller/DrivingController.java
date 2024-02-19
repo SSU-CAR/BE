@@ -4,10 +4,7 @@ package ssucar.driving.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ssucar.driving.dto.DrivingDto;
 import ssucar.driving.entity.Report;
 import ssucar.driving.entity.Risk;
@@ -52,6 +49,12 @@ public class DrivingController {
     public ResponseEntity<?> postStartDriving(){
 
         return new ResponseEntity<>(drivingService.startDriving(), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/end")
+    public ResponseEntity<?> postEndDriving(){
+
+        return new ResponseEntity<>(drivingService.endDriving(), HttpStatus.OK);
     }
 
 }

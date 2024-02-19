@@ -16,4 +16,16 @@ public class DrivingDto {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class endResponse {
+        private Integer reportId;
+
+        public endResponse(int reportId) {
+            this.reportId = reportId;
+        }
+    }
+
 }
