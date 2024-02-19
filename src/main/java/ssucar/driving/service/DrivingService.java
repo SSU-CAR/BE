@@ -13,6 +13,8 @@ import ssucar.driving.repository.ReportRepository;
 import ssucar.driving.repository.SummaryRepository;
 import ssucar.exception.BusinessLogicException;
 import ssucar.exception.ExceptionCode;
+import ssucar.scenario.entity.Scenario;
+import ssucar.scenario.repository.ScenarioRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +37,8 @@ public class DrivingService {
     @Autowired
     private final SummaryRepository summaryRepository;
 
+    @Autowired
+    private final ScenarioRepository scenarioRepository;
 
     public DrivingDto.startResponse startDriving() {
         if (!isDriving) {
@@ -79,11 +83,15 @@ public class DrivingService {
             findSummary.increaseSummaryCount();
             return summaryRepository.save(findSummary);
         } else {
+            Optional<Scenario> optionalScenario = scenarioRepository.findById(scenarioType);
+            Scenario fm = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+
             Summary postSummary = Summary.builder()
                     .scenarioType(scenarioType)
                     .summaryCount(0)
                     .report(findReport)
                     .summaryCount(1)
+                    .scenarioName(fm.getName())
                     .build();
             findReport.getSummaries().add(postSummary);
             return summaryRepository.save(postSummary);

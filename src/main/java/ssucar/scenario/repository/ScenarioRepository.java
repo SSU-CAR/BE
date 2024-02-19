@@ -5,6 +5,6 @@ import ssucar.scenario.entity.Scenario;
 
 import java.util.Optional;
 
-public interface ScenarioRepository extends JpaRepository<Scenario, Long> {
+public interface ScenarioRepository extends JpaRepository<Scenario, Integer> {
 //    Optional<Scenario> findByScenarioName(Scenario.name name);
 }

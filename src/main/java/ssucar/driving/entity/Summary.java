@@ -24,6 +24,7 @@ public class Summary {
 
     private int scenarioType;
     private int summaryCount;
+    private String scenarioName;
 
     public void increaseSummaryCount() {
         this.summaryCount += 1;

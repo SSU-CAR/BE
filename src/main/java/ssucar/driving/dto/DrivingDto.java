@@ -28,4 +28,20 @@ public class DrivingDto {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class getReportResponse {
+        private Integer reportId;
+        private String departuredAt;
+        private String arrivedAt;
+        private float mileage;
+        private int score;
+        private String scoreComment;
+//        private List<TagDto> tags;
+//        private List<TagDto> tags;
+
+    }
+
 }
