@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+source /etc/profile
 PROJECT_ROOT="/home/ec2-user/apps/deploy"
 JAR_FILE="$PROJECT_ROOT/spring-webapp.jar"
 
