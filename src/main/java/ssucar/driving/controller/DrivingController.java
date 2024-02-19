@@ -9,14 +9,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ssucar.driving.dto.DrivingDto;
+import ssucar.driving.entity.Report;
+import ssucar.driving.entity.Risk;
 import ssucar.driving.service.DrivingService;
 import ssucar.dto.SingleResponseDto;
+import ssucar.utils.UriCreator;
 
+import java.net.URI;
 import java.util.HashMap;
+
 
 @RestController
 @RequestMapping("/driving")
 public class DrivingController {
+    private final static String DRIVING_DEFAULT_URL = "/driving";
 
     @Autowired
     private DrivingService drivingService;
@@ -24,17 +30,28 @@ public class DrivingController {
     @PostMapping("/embedded")
     public ResponseEntity embedded(@RequestBody HashMap<String, Object> requestJsonHashMap) {
 
-        int type = (int) requestJsonHashMap.get("type");
+        int scenarioType = (int) requestJsonHashMap.get("type");
         String createdAt = (String) requestJsonHashMap.get("createdAt");
-        System.out.println("type: " + type);
+        System.out.println("type: " + scenarioType);
         System.out.println("createdAt: " + createdAt);
 
-        return new ResponseEntity(HttpStatus.OK);
+        boolean isDriving = drivingService.isDriving();
+        if(isDriving){
+
+            Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
+//            URI location = UriCreator.createUri(DRIVING_DEFAULT_URL, (long) postRisk.getRiskId());
+            return new ResponseEntity<>(HttpStatus.OK);
+
+//            return ResponseEntity.created(location).build();
+        }
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/start")
     public ResponseEntity<?> postStartDriving(){
-        return ResponseEntity.ok(drivingService.startDriving());
+
+        return new ResponseEntity<>(drivingService.startDriving(), HttpStatus.CREATED);
     }
 
 }

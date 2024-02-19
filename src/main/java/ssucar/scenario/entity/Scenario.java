@@ -1,18 +1,23 @@
 package ssucar.scenario.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@Entity
 @Table(name="scenario")
 @Builder
+@Entity
 public class Scenario {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Getter
-    private Long scenarioId;
+    private int scenarioId;
 
     private String name;
     private int weight;

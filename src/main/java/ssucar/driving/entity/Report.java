@@ -1,14 +1,18 @@
 package ssucar.driving.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Entity
 @Table(name="report")
 @Builder
@@ -18,12 +22,14 @@ public class Report {
     @Getter
     private int reportId;
 
-    private LocalDateTime departuredAt;
-    private LocalDateTime arrivedAt;
+    private String departuredAt;
+    private String arrivedAt;
     private Float mileage;
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "report")
-//    private List<Record> records = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "report", cascade = CascadeType.PERSIST)
+    private List<Risk> risks = new ArrayList<>();
+
+
 
 }

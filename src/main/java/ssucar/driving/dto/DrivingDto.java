@@ -15,4 +15,5 @@ public class DrivingDto {
             this.reportId = reportId;
         }
     }
+
 }
