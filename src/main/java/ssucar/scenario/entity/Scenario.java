@@ -7,21 +7,15 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name="Scenario")
+@Table(name="scenario")
 @Builder
 public class Scenario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long scenarioId;
 
-    @Column(name = "NAME", nullable = false)
     private String name;
-
-    @Column(name = "WEIGHT", nullable = false)
     private int weight;
-
-    @Builder.Default
-    @Column(name = "TOTAL", nullable = false)
-    private long total = 0;
+    private long total;
 
 }

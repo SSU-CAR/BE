@@ -1,7 +1,7 @@
-create table report
-(
- report_id Int AUTO_INCREMENT PRIMARY KEY,
- departured_at TIMESTAMP,
- arrived_at TIMESTAMP,
- mileage NUMERIC
-);
+--create table report
+--(
+-- report_id Int AUTO_INCREMENT PRIMARY KEY,
+-- departured_at TIMESTAMP,
+-- arrived_at TIMESTAMP,
+-- mileage NUMERIC
+--);
