@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SummaryDto {
+    private Integer scenarioType;
     private String scenarioName;
     private int scenarioCount;
 }

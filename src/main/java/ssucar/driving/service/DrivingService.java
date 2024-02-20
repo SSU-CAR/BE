@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssucar.driving.dto.DrivingDto;
+import ssucar.driving.dto.SummaryDto;
 import ssucar.driving.entity.Report;
 import ssucar.driving.entity.Risk;
 import ssucar.driving.entity.Summary;
@@ -18,6 +19,8 @@ import ssucar.scenario.repository.ScenarioRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 @Service
@@ -132,6 +135,26 @@ public class DrivingService {
     }
 
 
+    public DrivingDto.getReportResponse getReport(Integer reportId) {
+        Optional<Report> optionalReport = reportRepository.findById(reportId);
+
+        Report report =
+                optionalReport.orElseThrow(() ->
+                        new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+
+        return DrivingDto.getReportResponse.builder()
+                .reportId(report.getReportId())
+                .departuredAt(report.getDeparturedAt())
+                .arrivedAt(report.getArrivedAt())
+                .mileage(report.getMileage())
+                .score(report.getScore())
+                .scoreComment("지난번보다 20점이나 올랐네요! 수고하셨습니다!")
+                .internalSummaries(getInternalSummariesDto(report.getReportId()))
+                .externalSummaries(getExternalSummariesDto(report.getReportId()))
+                .build();
+    }
+
+
     public boolean isDriving() {
         return isDriving;
     }
@@ -150,6 +173,28 @@ public class DrivingService {
         Optional<Report> optionalReport = reportRepository.findById(reportId);
         return optionalReport.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+    }
+
+    private List<SummaryDto> getInternalSummariesDto(int reportId) {
+        return summaryRepository.findByReport_ReportId(reportId).stream()
+                .filter(summary -> summary.getScenarioType() >= 1 && summary.getScenarioType() <= 50)
+                .map(summary -> SummaryDto.builder()
+                        .scenarioType(summary.getScenarioType())
+                        .scenarioName(summary.getScenarioName())
+                        .scenarioCount(summary.getSummaryCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<SummaryDto> getExternalSummariesDto(int reportId) {
+        return summaryRepository.findByReport_ReportId(reportId).stream()
+                .filter(summary -> summary.getScenarioType() >= 51 && summary.getScenarioType() < 100)
+                .map(summary -> SummaryDto.builder()
+                        .scenarioType(summary.getScenarioType())
+                        .scenarioName(summary.getScenarioName())
+                        .scenarioCount(summary.getSummaryCount())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }

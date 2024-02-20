@@ -49,8 +49,6 @@ public class DrivingController {
                 return new ResponseEntity<>(HttpStatus.OK);
 //            return ResponseEntity.created(location).build();
             }
-
-
         }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -62,9 +60,15 @@ public class DrivingController {
     }
 
     @PatchMapping("/end")
-    public ResponseEntity<?> postEndDriving(){
+    public ResponseEntity<?> patchEndDriving(){
 
         return new ResponseEntity<>(drivingService.endDriving(), HttpStatus.OK);
+    }
+
+    @GetMapping("/end/{report-id}")
+    public ResponseEntity<?> getReport(@PathVariable("report-id") Integer reportId) {
+
+        return new ResponseEntity<>(drivingService.getReport(reportId), HttpStatus.OK);
     }
 
 }

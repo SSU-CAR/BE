@@ -2,6 +2,8 @@ package ssucar.driving.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 public class DrivingDto {
 
     @Getter
@@ -39,8 +41,8 @@ public class DrivingDto {
         private float mileage;
         private int score;
         private String scoreComment;
-//        private List<TagDto> tags;
-//        private List<TagDto> tags;
+        private List<SummaryDto> internalSummaries;
+        private List<SummaryDto> externalSummaries;
 
     }
 
