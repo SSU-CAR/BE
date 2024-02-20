@@ -28,7 +28,7 @@ public class FeedbackService {
     private final ReportRepository reportRepository;
 
 
-    public FeedbackDto.bio makeBio(int thisMonth) {
+    public FeedbackDto.bioResponse makeBio(int thisMonth) {
         int reportItems = drivingService.reportItems();
         Optional<Report> optionalReport = reportRepository.findById(reportItems);
         Report latestReport =
@@ -52,11 +52,29 @@ public class FeedbackService {
             totalMileage += report.getMileage();
         }
 
-        return FeedbackDto.bio.builder()
+        return FeedbackDto.bioResponse.builder()
                 .monthlyMileage(monthlyMileage)
                 .totalMileage(totalMileage)
                 .latestDeparture(latestDeparture)
                 .latestArrival(latestArrival)
+                .build();
+    }
+
+    public FeedbackDto.scoreResponse getAverage(int thisMonth) {
+        List<Report> allReports = reportRepository.findAll();
+        int scoreSum = 0;
+        int thisMonthReport = 0;
+        for (Report report : allReports) {
+            int month = extractMonth(report.getDeparturedAt());
+            if (month == thisMonth) {
+                scoreSum += report.getScore();
+                thisMonthReport++;
+            }
+        }
+        int averageScore = scoreSum / thisMonthReport;
+
+        return FeedbackDto.scoreResponse.builder()
+                .averageScore(averageScore)
                 .build();
     }
 

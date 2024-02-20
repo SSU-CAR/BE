@@ -24,5 +24,11 @@ public class FeedbackController {
         return new ResponseEntity<>(feedbackService.makeBio(thisMonth), HttpStatus.OK);
     }
 
+    @GetMapping("/score")
+    public ResponseEntity<?> getFeedbackAverageScore(@RequestBody HashMap<String, Object> requestJsonHashMap) {
+        int thisMonth = (int) requestJsonHashMap.get("thisMonth");
+        return new ResponseEntity<>(feedbackService.getAverage(thisMonth), HttpStatus.OK);
+    }
+
 
 }

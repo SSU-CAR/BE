@@ -6,25 +6,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class FeedbackDto {
-//    @Getter
-//    @Builder
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    public static class request {
-//        private int thisMonth;
-//    }
-
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class bio {
+    public static class bioResponse {
         private Float monthlyMileage;
         private Float totalMileage;
         private String latestDeparture;
         private String latestArrival;
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class scoreResponse {
+        private int averageScore;
+    }
 
 
 }
