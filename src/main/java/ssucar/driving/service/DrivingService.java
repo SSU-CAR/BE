@@ -84,10 +84,16 @@ public class DrivingService {
 
         if (findSummary != null) {
             findSummary.increaseSummaryCount();
+            //
+            Optional<Scenario> optionalScenario = scenarioRepository.findById(scenarioType);
+            Scenario fm = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+            fm.increaseTotal();
+            //
             return summaryRepository.save(findSummary);
         } else {
             Optional<Scenario> optionalScenario = scenarioRepository.findById(scenarioType);
             Scenario fm = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+            fm.increaseTotal();
 
             Summary postSummary = Summary.builder()
                     .scenarioType(scenarioType)
@@ -126,6 +132,7 @@ public class DrivingService {
 
             Report endedReport = reportRepository.save(fm);
             //
+
 
             reportItems = endedReport.getReportId();
             return new DrivingDto.endResponse(reportItems);

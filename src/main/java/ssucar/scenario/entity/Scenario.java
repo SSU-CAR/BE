@@ -23,4 +23,7 @@ public class Scenario {
     private int weight;
     private long total;
 
+    public void increaseTotal() {
+        this.total += 1;
+    }
 }
