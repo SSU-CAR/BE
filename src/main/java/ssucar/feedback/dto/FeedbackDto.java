@@ -6,6 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class FeedbackDto {
+//    @Getter
+//    @Builder
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+//    public static class request {
+//        private int thisMonth;
+//    }
+
     @Getter
     @Builder
     @AllArgsConstructor

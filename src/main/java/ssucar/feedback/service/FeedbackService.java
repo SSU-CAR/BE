@@ -14,6 +14,7 @@ import ssucar.exception.BusinessLogicException;
 import ssucar.exception.ExceptionCode;
 import ssucar.feedback.dto.FeedbackDto;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,23 +28,44 @@ public class FeedbackService {
     private final ReportRepository reportRepository;
 
 
-//    public FeedbackDto.bio makeBio(){
-//        int reportItems = drivingService.reportItems();
-//
-//        String latestDeparture = reportRepository.findById(reportItems).isPresent()get().getDeparturedAt();
-//
-//        Optional<Report> optionalReport = reportRepository.findById(reportId);
-//
-//        Report report =
-//                optionalReport.orElseThrow(() ->
-//                        new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
-//
-////        return FeedbackDto.bio.builder()
-////                .monthlyMileage(report.getReportId())
-////                .totalMileage(report.getDeparturedAt())
-////                .latestDeparture(report.getArrivedAt())
-////                .latestArrival(report.getMileage())
-////                .build();
-//    }
+    public FeedbackDto.bio makeBio(int thisMonth) {
+        int reportItems = drivingService.reportItems();
+        Optional<Report> optionalReport = reportRepository.findById(reportItems);
+        Report latestReport =
+                optionalReport.orElseThrow(() ->
+                        new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+        String latestDeparture = latestReport.getDeparturedAt();
+        String latestArrival = latestReport.getArrivedAt();
+
+        List<Report> allReports = reportRepository.findAll();
+        float monthlyMileage = 0;
+        float totalMileage = 0;
+
+        for (Report report : allReports) {
+            String departuredAt = report.getDeparturedAt();
+            int month = extractMonth(departuredAt);
+            // 월별 마일리지 계산
+            if (month == thisMonth) {
+                monthlyMileage += report.getMileage();
+            }
+            // 총 마일리지 계산
+            totalMileage += report.getMileage();
+        }
+
+        return FeedbackDto.bio.builder()
+                .monthlyMileage(monthlyMileage)
+                .totalMileage(totalMileage)
+                .latestDeparture(latestDeparture)
+                .latestArrival(latestArrival)
+                .build();
+    }
+
+    private int extractMonth(String departuredAt) {
+        String[] tokens = departuredAt.split("-");
+        if (tokens.length >= 2) {
+            return Integer.parseInt(tokens[1]);
+        }
+        return -1;
+    }
 
 }
