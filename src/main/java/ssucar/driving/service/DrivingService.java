@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ssucar.badge.entity.Badge;
+import ssucar.badge.service.BadgeService;
 import ssucar.driving.dto.DrivingDto;
 import ssucar.driving.dto.SummaryDto;
 import ssucar.driving.entity.Report;
@@ -42,6 +44,9 @@ public class DrivingService {
 
     @Autowired
     private final ScenarioRepository scenarioRepository;
+
+    @Autowired
+    private final BadgeService badgeService;
 
     public DrivingDto.startResponse startDriving() {
         if (!isDriving) {
@@ -131,8 +136,29 @@ public class DrivingService {
             report.setDeparturedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             Report endedReport = reportRepository.save(fm);
-            //
 
+            //Badge 관련 업데이트
+            //Badge 1
+            badgeService.updateBadge(1);
+            //Badge 2
+            if(endedReport.getScore()>=90)
+                badgeService.updateBadge(2);
+            //Badge 3
+            if(endedReport.getScore()==100)
+                badgeService.updateBadge(3);
+            //Badge 4
+            //주행(100km 이상)에서 문제 상황 10번 미만으로 받기
+            //Badge 5
+            //졸음 경고 없이 10번 주행
+            //Badge 6
+            List<Badge> badges = badgeService.getBadges();
+            int chk = 0;
+            for(Badge badge : badges) {
+                if(badge.getStatus()==1)
+                    chk++;
+            }
+            if(chk==5)
+                badgeService.updateBadge(6);
 
             reportItems = endedReport.getReportId();
             return new DrivingDto.endResponse(reportItems);
