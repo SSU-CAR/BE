@@ -19,8 +19,13 @@ public class HistoryController {
 
     @GetMapping
     public ResponseEntity<?> getHistories() {
-
         return new ResponseEntity<>(historyService.findHistories(), HttpStatus.OK);
     }
+
+    @GetMapping("/{report-id}")
+    public ResponseEntity<?> getHistory(@PathVariable("report-id") Integer reportId) {
+        return new ResponseEntity<>(historyService.findHistory(reportId), HttpStatus.OK);
+    }
+
 
 }

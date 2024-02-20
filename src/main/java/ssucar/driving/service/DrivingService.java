@@ -182,7 +182,7 @@ public class DrivingService {
                 new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
     }
 
-    private List<SummaryDto> getInternalSummariesDto(int reportId) {
+    public List<SummaryDto> getInternalSummariesDto(int reportId) {
         return summaryRepository.findByReport_ReportId(reportId).stream()
                 .filter(summary -> summary.getScenarioType() >= 1 && summary.getScenarioType() <= 50)
                 .map(summary -> SummaryDto.builder()
@@ -193,7 +193,7 @@ public class DrivingService {
                 .collect(Collectors.toList());
     }
 
-    private List<SummaryDto> getExternalSummariesDto(int reportId) {
+    public List<SummaryDto> getExternalSummariesDto(int reportId) {
         return summaryRepository.findByReport_ReportId(reportId).stream()
                 .filter(summary -> summary.getScenarioType() >= 51 && summary.getScenarioType() < 100)
                 .map(summary -> SummaryDto.builder()
