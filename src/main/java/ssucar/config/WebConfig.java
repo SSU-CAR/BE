@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry
                 .addMapping("/**")
                 .allowedMethods("GET","POST","PUT","DELETE")
-                .allowedOrigins("http://localhost:3000", "http://localhost:8080")
+                .allowedOrigins("http://localhost:3000", "http://localhost:8080", "http://ssu-car.s3-website.ap-northeast-2.amazonaws.com")
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(86400);
