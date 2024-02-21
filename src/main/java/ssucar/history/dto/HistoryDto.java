@@ -20,7 +20,15 @@ public class HistoryDto {
         private String arrivedAt;
         private float mileage;
         private int score;
+    }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class detailResponse {
+        private List<SummaryDto> internalSummaries;
+        private List<SummaryDto> externalSummaries;
     }
 
 

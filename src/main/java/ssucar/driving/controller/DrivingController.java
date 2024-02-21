@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.HashMap;
 
 
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8080", "http://ssu-car.s3-website.ap-northeast-2.amazonaws.com" }, allowCredentials = "true")
 @RestController
 @RequestMapping("/driving")
 public class DrivingController {

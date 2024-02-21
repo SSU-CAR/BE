@@ -47,4 +47,17 @@ public class HistoryService {
         }
         return list;
     }
+
+    public HistoryDto.detailResponse findHistory(Integer reportId) {
+        Optional<Report> optionalReport = reportRepository.findById(reportId);
+
+        Report report =
+                optionalReport.orElseThrow(() ->
+                        new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+
+        return HistoryDto.detailResponse.builder()
+                .internalSummaries(drivingService.getInternalSummariesDto(report.getReportId()))
+                .externalSummaries(drivingService.getExternalSummariesDto(report.getReportId()))
+                .build();
+    }
 }
