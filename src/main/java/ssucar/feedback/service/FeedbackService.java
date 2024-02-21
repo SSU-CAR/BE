@@ -7,15 +7,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssucar.driving.dto.DrivingDto;
+import ssucar.driving.dto.SummaryDto;
 import ssucar.driving.entity.Report;
+import ssucar.driving.entity.Summary;
 import ssucar.driving.repository.ReportRepository;
+import ssucar.driving.repository.SummaryRepository;
 import ssucar.driving.service.DrivingService;
 import ssucar.exception.BusinessLogicException;
 import ssucar.exception.ExceptionCode;
 import ssucar.feedback.dto.FeedbackDto;
+import ssucar.scenario.entity.Scenario;
+import ssucar.scenario.repository.ScenarioRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,6 +32,11 @@ public class FeedbackService {
     @Autowired
     private final ReportRepository reportRepository;
 
+    @Autowired
+    private final SummaryRepository summaryRepository;
+
+    @Autowired
+    private final ScenarioRepository scenarioRepository;
 
     public FeedbackDto.bioResponse makeBio(int thisMonth) {
         int reportItems = drivingService.reportItems();
@@ -78,21 +88,42 @@ public class FeedbackService {
                 .build();
     }
 
-//    public FeedbackDto.topRisksResponse getTopFourRisks(int thisMonth) {
-//        List<Report> allReports = reportRepository.findAll();
-//        for (Report report : allReports) {
-//            int month = extractMonth(report.getDeparturedAt());
-//            if (month == thisMonth) {
-//                scoreSum += report.getScore();
-//                thisMonthReport++;
-//            }
-//        }
-//        int averageScore = scoreSum / thisMonthReport;
-//
-//        return FeedbackDto.topRisksResponse.builder()
-//                .topRisks(getInternalSummariesDto(report.getReportId()))
-//                .build();
-//    }
+    public FeedbackDto.topRisksResponse getTopFourRisks(int thisMonth) {
+        int reportItems = drivingService.reportItems();
+        List<Summary> allSummaries = summaryRepository.findByReport_ReportId(reportItems);
+        Map<Integer, Integer> summaryCountMap = new HashMap<>();
+
+        for (Summary summary : allSummaries) {
+            String departuredAt = summary.getReport().getDeparturedAt();
+            int month = extractMonth(departuredAt);
+            if (month == thisMonth) {
+                int scenarioType = summary.getScenarioType();
+                int summaryCount = summary.getSummaryCount();
+                summaryCountMap.put(scenarioType, summaryCountMap.getOrDefault(scenarioType, 0) + summaryCount);
+            }
+        }
+
+
+        List<SummaryDto> topRisks = summaryCountMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(4)
+                .map(entry -> {
+                    Optional<Scenario> optionalScenario = scenarioRepository.findById(entry.getKey());
+                    Scenario scenario = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+                    return SummaryDto.builder()
+                            .scenarioType(entry.getKey())
+                            .scenarioName(scenario.getName()) // scenarioName 추가
+                            .scenarioCount(entry.getValue())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return FeedbackDto.topRisksResponse.builder()
+                .topRisks(topRisks)
+                .build();
+
+
+    }
 
     private int extractMonth(String departuredAt) {
         String[] tokens = departuredAt.split("-");
