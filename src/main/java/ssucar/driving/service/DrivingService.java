@@ -21,7 +21,9 @@ import ssucar.scenario.repository.ScenarioRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -51,6 +53,7 @@ public class DrivingService {
     public DrivingDto.startResponse startDriving() {
         if (!isDriving) {
             setDriving(true);
+            // 이 시점에서 SSE 통신 열기
             LocalDateTime currentTime = LocalDateTime.now();
             String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             Report newReport = Report.builder()
@@ -65,6 +68,8 @@ public class DrivingService {
         } else {
             return new DrivingDto.startResponse(0);
         }
+
+
     }
 
     public Risk createRisk(int type, String createdAt) {
@@ -128,10 +133,9 @@ public class DrivingService {
             LocalDateTime currentTime = LocalDateTime.now();
             String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-//            이거 save말고 다시 생각
+
             Optional<Report> optionalReport = reportRepository.findById(report.getReportId());
             Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
-//            Optional.ofNullable(report.getMileage()).ifPresent(mileage -> fm.setMileageㅠㅁㅇㅎㄷ(report.getMileage()));
 
             //운전 점수 산정
             int score = 100; //기본 점수 100점
@@ -194,13 +198,48 @@ public class DrivingService {
                 optionalReport.orElseThrow(() ->
                         new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
 
+        //ScoreComment 만들기
+        String scoreComment;
+        if (reportId == 1) {
+            scoreComment = "첫 주행을 하셨군요! 수고하셨습니다!";
+        } else {
+            // 이전 보고서의 점수 가져오기
+            Optional<Report> previousReportOptional = reportRepository.findById(reportId - 1);
+            Report previousReport = previousReportOptional.orElseThrow(() ->
+                    new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
+            int previousScore = previousReport.getScore();
+
+            // 현재 보고서의 점수
+            int currentScore = report.getScore();
+
+            // 이전 점수와 현재 점수의 차이 계산
+            int scoreDifference = currentScore - previousScore;
+
+            // 점수 변화에 따라 메시지 생성
+            if(currentScore == 100) {
+                scoreComment = "안전운전 점수 100점!🎉 모비님.. 베스트 드라이버일지도?";
+            } else if (scoreDifference > 20) {
+                scoreComment = "저번보다 " + scoreDifference + "점 올랐어요! 이대로만 쭉😊";
+            } else if (scoreDifference > 0) {
+                scoreComment = "저번보다 " + scoreDifference + "점 올랐어요! 계속해서 분발하세요🤗";
+            } else if (scoreDifference < -20) {
+                scoreDifference *= -1; // 음수를 양수로 변환
+                scoreComment = "저번보다 " + scoreDifference + "점 떨어졌어요. 운전 습관을 성찰해봅시다😠";
+            } else if (scoreDifference < 0) {
+                scoreDifference *= -1;
+                scoreComment = "저번보다 " + scoreDifference + "점 떨어졌어요. 안전운전에 조금만 더 신경써봅시다🤔";
+            } else {
+                scoreComment = "저번과 점수가 같아요. 조금만 더 신경써볼까요?😉";
+            }
+        }
+
         return DrivingDto.getReportResponse.builder()
                 .reportId(report.getReportId())
                 .departuredAt(report.getDeparturedAt())
                 .arrivedAt(report.getArrivedAt())
                 .mileage(report.getMileage())
                 .score(report.getScore())
-                .scoreComment("지난번보다 20점이나 올랐네요! 수고하셨습니다!")
+                .scoreComment(scoreComment)
                 .internalSummaries(getInternalSummariesDto(report.getReportId()))
                 .externalSummaries(getExternalSummariesDto(report.getReportId()))
                 .build();
@@ -248,5 +287,7 @@ public class DrivingService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+
 
 }

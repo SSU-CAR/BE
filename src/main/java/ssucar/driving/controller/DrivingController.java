@@ -40,15 +40,13 @@ public class DrivingController {
                 drivingService.updateMileage(scenarioType, createdAt);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else if (scenarioType == 200){
-                // 속도 값 들어오는거 처리
 
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
+                // 이때마다 열려있는 SSE로 프론트엔드에 type, createdAt 보내기
                 Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
-//            URI location = UriCreator.createUri(DRIVING_DEFAULT_URL, (long) postRisk.getRiskId());
                 Summary postSummary = drivingService.updateSummary(scenarioType);
                 return new ResponseEntity<>(HttpStatus.OK);
-//            return ResponseEntity.created(location).build();
             }
         }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -56,13 +54,13 @@ public class DrivingController {
 
     @PostMapping("/start")
     public ResponseEntity<?> postStartDriving(){
-
+        //SSE 통신 열어주기
         return new ResponseEntity<>(drivingService.startDriving(), HttpStatus.CREATED);
     }
 
     @PatchMapping("/end")
     public ResponseEntity<?> patchEndDriving(){
-
+        //SSE 통신 닫아주기
         return new ResponseEntity<>(drivingService.endDriving(), HttpStatus.OK);
     }
 
