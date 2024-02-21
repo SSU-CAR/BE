@@ -30,5 +30,11 @@ public class FeedbackController {
         return new ResponseEntity<>(feedbackService.getAverage(thisMonth), HttpStatus.OK);
     }
 
+//    @GetMapping("/top4")
+//    public ResponseEntity<?> getTopRisks(@RequestBody HashMap<String, Object> requestJsonHashMap) {
+//        int thisMonth = (int) requestJsonHashMap.get("thisMonth");
+//        return new ResponseEntity<>(feedbackService.getTopFourRisks(thisMonth), HttpStatus.OK);
+//    }
+
 
 }

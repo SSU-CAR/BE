@@ -78,6 +78,22 @@ public class FeedbackService {
                 .build();
     }
 
+//    public FeedbackDto.topRisksResponse getTopFourRisks(int thisMonth) {
+//        List<Report> allReports = reportRepository.findAll();
+//        for (Report report : allReports) {
+//            int month = extractMonth(report.getDeparturedAt());
+//            if (month == thisMonth) {
+//                scoreSum += report.getScore();
+//                thisMonthReport++;
+//            }
+//        }
+//        int averageScore = scoreSum / thisMonthReport;
+//
+//        return FeedbackDto.topRisksResponse.builder()
+//                .topRisks(getInternalSummariesDto(report.getReportId()))
+//                .build();
+//    }
+
     private int extractMonth(String departuredAt) {
         String[] tokens = departuredAt.split("-");
         if (tokens.length >= 2) {
