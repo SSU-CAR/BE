@@ -5,3 +5,4 @@
 -- arrived_at TIMESTAMP,
 -- mileage NUMERIC
 --);
+--
