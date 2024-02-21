@@ -35,5 +35,11 @@ public class FeedbackController {
         return new ResponseEntity<>(feedbackService.getTopFourRisks(thisMonth), HttpStatus.OK);
     }
 
+    @PostMapping("/caution")
+    public ResponseEntity<?> getInternalExternalCautions(@RequestBody HashMap<String, Object> requestJsonHashMap) {
+        int thisMonth = (int) requestJsonHashMap.get("thisMonth");
+        return new ResponseEntity<>(feedbackService.getInternalExternalCautions(thisMonth), HttpStatus.OK);
+    }
+
 
 }

@@ -116,13 +116,64 @@ public class FeedbackService {
                             .scenarioCount(entry.getValue())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return FeedbackDto.topRisksResponse.builder()
                 .topRisks(topRisks)
                 .build();
+    }
+
+    public FeedbackDto.cautionResponse getInternalExternalCautions(int thisMonth) {
+        int reportItems = drivingService.reportItems();
+        List<Summary> allSummaries = summaryRepository.findByReport_ReportId(reportItems);
+        Map<Integer, Integer> summaryCountMap = new HashMap<>();
+
+        for (Summary summary : allSummaries) {
+            String departuredAt = summary.getReport().getDeparturedAt();
+            int month = extractMonth(departuredAt);
+            if (month == thisMonth) {
+                int scenarioType = summary.getScenarioType();
+                int summaryCount = summary.getSummaryCount();
+                summaryCountMap.put(scenarioType, summaryCountMap.getOrDefault(scenarioType, 0) + summaryCount);
+            }
+        }
 
 
+        //아직 구현전
+        List<SummaryDto> internalSummaries = summaryCountMap.entrySet().stream()
+                .filter(entry -> entry.getKey() >= 1 && entry.getKey() <= 50)
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(3)
+                .map(entry -> {
+                    Optional<Scenario> optionalScenario = scenarioRepository.findById(entry.getKey());
+                    Scenario scenario = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+                    return SummaryDto.builder()
+                            .scenarioType(entry.getKey())
+                            .scenarioName(scenario.getName()) // scenarioName 추가
+                            .scenarioCount(entry.getValue())
+                            .build();
+                })
+                .toList();
+
+        List<SummaryDto> externalSummaries = summaryCountMap.entrySet().stream()
+                .filter(entry -> entry.getKey() >= 51 && entry.getKey() < 100)
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(2)
+                .map(entry -> {
+                    Optional<Scenario> optionalScenario = scenarioRepository.findById(entry.getKey());
+                    Scenario scenario = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+                    return SummaryDto.builder()
+                            .scenarioType(entry.getKey())
+                            .scenarioName(scenario.getName()) // scenarioName 추가
+                            .scenarioCount(entry.getValue())
+                            .build();
+                })
+                .toList();
+
+        return FeedbackDto.cautionResponse.builder()
+                .internalSummaries(internalSummaries)
+                .externalSummaries(externalSummaries)
+                .build();
     }
 
     private int extractMonth(String departuredAt) {
