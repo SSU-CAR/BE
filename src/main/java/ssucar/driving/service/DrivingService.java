@@ -131,8 +131,27 @@ public class DrivingService {
 //            이거 save말고 다시 생각
             Optional<Report> optionalReport = reportRepository.findById(report.getReportId());
             Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
-//            Optional.ofNullable(report.getMileage()).ifPresent(mileage -> fm.setMileage(report.getMileage()));
-            fm.setScore(50);
+//            Optional.ofNullable(report.getMileage()).ifPresent(mileage -> fm.setMileageㅠㅁㅇㅎㄷ(report.getMileage()));
+
+            //운전 점수 산정
+            int score = 100; //기본 점수 100점
+            List<Summary> list = summaryRepository.findByReport_ReportId(reportItems);
+            for(Summary summary : list) { //위반 횟수 * 각각의 가중치만큼 감점
+                int count = summary.getSummaryCount();
+                Scenario scenario = scenarioRepository.findById(summary.getScenarioType()).orElseThrow(() -> new IllegalArgumentException(("해당 번호의 시나리오가 존재하지 않습니다.")));
+                int weight = scenario.getWeight();
+                score -= count * weight;
+            }
+            //주행거리가 많아질수록 이를 반영하기 위해 가점
+            int mileage = report.getMileage().intValue();
+            score += mileage/20;
+            //100점이 넘어가면 100점으로 처리, 0점 미만이면 0점으로 처리
+            if(score>100)
+                score = 100;
+            else if(score<0)
+                score = 0;
+
+            fm.setScore(score);
             report.setArrivedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             Report endedReport = reportRepository.save(fm);
