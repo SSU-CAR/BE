@@ -133,7 +133,7 @@ public class DrivingService {
             Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
 //            Optional.ofNullable(report.getMileage()).ifPresent(mileage -> fm.setMileage(report.getMileage()));
             fm.setScore(50);
-            report.setDeparturedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            report.setArrivedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             Report endedReport = reportRepository.save(fm);
 
