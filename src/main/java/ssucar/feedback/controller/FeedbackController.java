@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ssucar.feedback.service.FeedbackService;
-import ssucar.history.service.HistoryService;
 
 import java.util.HashMap;
 
@@ -18,23 +17,23 @@ public class FeedbackController {
     private FeedbackService feedbackService;
 
 
-    @GetMapping("/bio")
+    @PostMapping("/bio")
     public ResponseEntity<?> getFeedbackBio(@RequestBody HashMap<String, Object> requestJsonHashMap) {
         int thisMonth = (int) requestJsonHashMap.get("thisMonth");
         return new ResponseEntity<>(feedbackService.makeBio(thisMonth), HttpStatus.OK);
     }
 
-    @GetMapping("/score")
+    @PostMapping("/score")
     public ResponseEntity<?> getFeedbackAverageScore(@RequestBody HashMap<String, Object> requestJsonHashMap) {
         int thisMonth = (int) requestJsonHashMap.get("thisMonth");
         return new ResponseEntity<>(feedbackService.getAverage(thisMonth), HttpStatus.OK);
     }
 
-//    @GetMapping("/top4")
-//    public ResponseEntity<?> getTopRisks(@RequestBody HashMap<String, Object> requestJsonHashMap) {
-//        int thisMonth = (int) requestJsonHashMap.get("thisMonth");
-//        return new ResponseEntity<>(feedbackService.getTopFourRisks(thisMonth), HttpStatus.OK);
-//    }
+    @PostMapping("/top4")
+    public ResponseEntity<?> getTopRisks(@RequestBody HashMap<String, Object> requestJsonHashMap) {
+        int thisMonth = (int) requestJsonHashMap.get("thisMonth");
+        return new ResponseEntity<>(feedbackService.getTopFourRisks(thisMonth), HttpStatus.OK);
+    }
 
 
 }
