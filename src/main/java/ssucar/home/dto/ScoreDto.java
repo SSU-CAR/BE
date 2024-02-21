@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScoreDto {
-    private Integer scenarioType;
-    private String scenarioName;
+    private Integer reportId;
+    private int score;
 }

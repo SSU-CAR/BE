@@ -17,7 +17,23 @@ public class HomeController {
 
     @GetMapping("/score")
     public ResponseEntity<?> getScore() {
-
         return new ResponseEntity<>(homeService.getLatestScore(), HttpStatus.OK);
     }
+
+    @GetMapping("/latestScores")
+    public ResponseEntity<?> getScores() {
+        return new ResponseEntity<>(homeService.getLatestScores(), HttpStatus.OK);
+    }
+
+    @GetMapping("/feedback")
+    public ResponseEntity<?> getFeedback() {
+        return new ResponseEntity<>(homeService.getHomeFeedback(), HttpStatus.OK);
+    }
+
+    @GetMapping("/recentRisks")
+    public ResponseEntity<?> getRisks() {
+        return new ResponseEntity<>(homeService.getRisks(), HttpStatus.OK);
+    }
+
+
 }
