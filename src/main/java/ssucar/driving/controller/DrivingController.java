@@ -13,6 +13,7 @@ import ssucar.driving.entity.Risk;
 import ssucar.driving.entity.Summary;
 import ssucar.driving.service.DrivingService;
 import ssucar.dto.SingleResponseDto;
+import ssucar.notification.service.NotificationService;
 import ssucar.utils.UriCreator;
 
 import java.net.URI;
@@ -28,6 +29,9 @@ public class DrivingController {
 
     @Autowired
     private DrivingService drivingService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/embedded")
     public ResponseEntity embedded(@RequestBody HashMap<String, Object> requestJsonHashMap) {
@@ -46,7 +50,8 @@ public class DrivingController {
 
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
-                // 이때마다 열려있는 SSE로 프론트엔드에 type, createdAt 보내기
+                //SSE로 내부 시나리오 상황일 때 값 보내기
+                notificationService.notify(1L, scenarioType);
                 Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
                 Summary postSummary = drivingService.updateSummary(scenarioType);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -71,30 +76,6 @@ public class DrivingController {
     public ResponseEntity<?> getReport(@PathVariable("report-id") Integer reportId) {
 
         return new ResponseEntity<>(drivingService.getReport(reportId), HttpStatus.OK);
-    }
-
-
-
-
-    //SSE
-    @GetMapping("/driving/events")
-    public void postEmbedded(@RequestBody HashMap<String, Object> requestJsonHashMap) {
-        // SseEmitter 객체 생성
-        SseEmitter emitter = new SseEmitter();
-
-        // DrivingService의 embedded 메서드 호출하여 값을 받음
-        Map<String, Object> eventData = drivingService.sendEmbedded(requestJsonHashMap, emitter);
-
-        // 받은 값으로 SSE 이벤트 생성 및 전송
-        if (eventData != null) {
-            ServerSentEvent<Map<String, Object>> event = ServerSentEvent.<Map<String, Object>>builder()
-                    .id(String.valueOf(System.currentTimeMillis()))
-                    .event("riskCreated")
-                    .data(eventData)
-                    .build();
-            // SSE 이벤트 전송
-            drivingService.sendSSEEvent(event, emitter);
-        }
     }
 
 }
