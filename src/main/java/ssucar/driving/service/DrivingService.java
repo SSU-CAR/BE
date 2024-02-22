@@ -21,6 +21,7 @@ import ssucar.scenario.repository.ScenarioRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,17 +131,34 @@ public class DrivingService {
         if (isDriving) {
             setDriving(false);
             Report report = findReport(reportItems);
-            LocalDateTime currentTime = LocalDateTime.now();
-            String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//            LocalDateTime currentTime = LocalDateTime.now();
+//            String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            report.setArrivedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            // 주행거리 세팅
+            if (report.getMileage() == 0) {
+                LocalDateTime departuredAt = LocalDateTime.parse(report.getDeparturedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                LocalDateTime arrivedAt = LocalDateTime.now();
 
+                long minutes = ChronoUnit.MINUTES.between(departuredAt, arrivedAt);
+
+                if (minutes < 1) {
+                    long seconds = ChronoUnit.SECONDS.between(departuredAt, arrivedAt);
+                    float mileage = seconds * (float)16.2 / 10;
+                    report.setMileage(mileage);
+                } else {
+                    float mileage = minutes * 100;
+                    report.setMileage(mileage);
+                }
+            }
 
             Optional<Report> optionalReport = reportRepository.findById(report.getReportId());
             Report fm = optionalReport.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REPORT_NOT_FOUND));
 
+
             //운전 점수 산정
             int score = 100; //기본 점수 100점
             List<Summary> list = summaryRepository.findByReport_ReportId(reportItems);
-            for(Summary summary : list) { //위반 횟수 * 각각의 가중치만큼 감점
+            for (Summary summary : list) { //위반 횟수 * 각각의 가중치만큼 감점
                 int count = summary.getSummaryCount();
                 Scenario scenario = scenarioRepository.findById(summary.getScenarioType()).orElseThrow(() -> new IllegalArgumentException(("해당 번호의 시나리오가 존재하지 않습니다.")));
                 int weight = scenario.getWeight();
@@ -148,15 +166,14 @@ public class DrivingService {
             }
             //주행거리가 많아질수록 이를 반영하기 위해 가점
             int mileage = report.getMileage().intValue();
-            score += mileage/20;
+            score += mileage / 20;
             //100점이 넘어가면 100점으로 처리, 0점 미만이면 0점으로 처리
-            if(score>100)
+            if (score > 100)
                 score = 100;
-            else if(score<0)
+            else if (score < 0)
                 score = 0;
 
             fm.setScore(score);
-            report.setArrivedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             Report endedReport = reportRepository.save(fm);
 
@@ -164,10 +181,10 @@ public class DrivingService {
             //Badge 1
             badgeService.updateBadge(1);
             //Badge 2
-            if(endedReport.getScore()>=90)
+            if (endedReport.getScore() >= 90)
                 badgeService.updateBadge(2);
             //Badge 3
-            if(endedReport.getScore()==100)
+            if (endedReport.getScore() == 100)
                 badgeService.updateBadge(3);
             //Badge 4
             //주행(100km 이상)에서 문제 상황 10번 미만으로 받기
@@ -176,11 +193,11 @@ public class DrivingService {
             //Badge 6
             List<Badge> badges = badgeService.getBadges();
             int chk = 0;
-            for(Badge badge : badges) {
-                if(badge.getStatus()==1)
+            for (Badge badge : badges) {
+                if (badge.getStatus() == 1)
                     chk++;
             }
-            if(chk==5)
+            if (chk == 5)
                 badgeService.updateBadge(6);
 
             reportItems = endedReport.getReportId();
@@ -216,7 +233,7 @@ public class DrivingService {
             int scoreDifference = currentScore - previousScore;
 
             // 점수 변화에 따라 메시지 생성
-            if(currentScore == 100) {
+            if (currentScore == 100) {
                 scoreComment = "안전운전 점수 100점!🎉 모비님.. 베스트 드라이버일지도?";
             } else if (scoreDifference > 20) {
                 scoreComment = "저번보다 " + scoreDifference + "점 올랐어요! 이대로만 쭉😊";
@@ -287,7 +304,6 @@ public class DrivingService {
                         .build())
                 .collect(Collectors.toList());
     }
-
 
 
 }
