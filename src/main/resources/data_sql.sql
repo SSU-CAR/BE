@@ -1,6 +1,6 @@
-insert into scenario (scenario_id, flag, name, weight, total) values (1, 1, '졸음 운전 (고개)', 2, 0);
+insert into scenario (scenario_id, flag, name, weight, total) values (1, 1, '전방 주시 태만', 2, 0);
 insert into scenario (scenario_id, flag, name, weight, total) values (2, 1, '핸드폰 사용', 3, 0);
-insert into scenario (scenario_id, flag, name, weight, total) values (3, 1, '졸음 운전 (눈)', 5, 0);
+insert into scenario (scenario_id, flag, name, weight, total) values (3, 1, '졸음 운전', 8, 0);
 insert into scenario (scenario_id, flag, name, weight, total) values (51, 2, '방향지시등 안 켜고 차선변경', 3, 0);
 insert into scenario (scenario_id, flag, name, weight, total) values (52, 2, '실선에서 차선변경', 3, 0);
 

@@ -16,11 +16,14 @@ import ssucar.home.dto.HomeDto;
 import ssucar.home.dto.ScoreDto;
 import ssucar.scenario.entity.Scenario;
 import ssucar.scenario.repository.ScenarioRepository;
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +37,6 @@ public class HomeService {
 
     @Autowired
     private final ScenarioRepository scenarioRepository;
-
-
-    private String homeFeedback;
 
 
     public HomeDto.scoreResponse getLatestScore() {
@@ -60,7 +60,40 @@ public class HomeService {
     }
 
     public HomeDto.feedbackResponse getHomeFeedback() {
-        homeFeedback = "차선 변경에 좀 더 신경써봅시다";
+        String homeFeedback = "차선 변경에 좀 더 신경써봅시다😉";
+
+        List<Report> latestReports = reportRepository.findByOrderByReportIdDesc();
+        Map<Integer, Integer> summaryCountMap = latestReports.stream()
+                .flatMap(report -> report.getSummaries().stream())
+                .collect(Collectors.groupingBy(Summary::getScenarioType,
+                        Collectors.summingInt(Summary::getSummaryCount)));
+        List<SummaryDto> recentRisks = summaryCountMap.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+                .limit(3)
+                .map(entry -> {
+                    Optional<Scenario> optionalScenario = scenarioRepository.findById(entry.getKey());
+                    Scenario scenario = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+                    return SummaryDto.builder()
+                            .scenarioType(entry.getKey())
+                            .scenarioName(scenario.getName())
+                            .scenarioCount(entry.getValue())
+                            .build();
+                })
+                .toList();
+
+
+        if(drivingService.reportItems()<3) homeFeedback = "더 많은 주행 데이터를 쌓아 운전 습관 피드백을 받아보세요";
+        else if(reportRepository.findAll().stream()
+                .sorted(Comparator.comparingInt(Report::getReportId).reversed())
+                .limit(3)
+                .toList().stream()
+                .flatMap(report -> report.getSummaries().stream()) // 각 Report의 Summary 리스트를 평면화
+                .filter(summary -> summary.getScenarioType() == 3) // scenarioType이 3인 것들만 필터링
+                .mapToInt(Summary::getSummaryCount) // summaryCount만 추출
+                .sum()>=2) homeFeedback = "졸음운전하다 영원히 잠듭니다..💀\n 졸음 쉼터를 잘 이용해봐요!";
+        else if(recentRisks.get(0).getScenarioCount()>10) homeFeedback = recentRisks.get(0).getScenarioName() + "는 특별히 더 주의가 필요해요🤔🤨";
+        else if(latestReports.subList(0, Math.min(latestReports.size(), 3)).stream()
+                .anyMatch(report -> report.getScore() <= 50)) homeFeedback = "안전하게 운전하는게 베스트 드라이버!😡";
         return new HomeDto.feedbackResponse(homeFeedback);
     }
 
