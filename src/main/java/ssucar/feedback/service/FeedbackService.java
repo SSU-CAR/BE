@@ -89,21 +89,21 @@ public class FeedbackService {
     }
 
     public FeedbackDto.topRisksResponse getTopFourRisks(int thisMonth) {
-        int reportItems = drivingService.reportItems();
-        List<Summary> allSummaries = summaryRepository.findByReport_ReportId(reportItems);
+        List<Integer> reportIdsThisMonth = reportRepository.findAll().stream()
+                .filter(report -> extractMonth(report.getDeparturedAt()) == thisMonth)
+                .map(Report::getReportId)
+                .toList();
         Map<Integer, Integer> summaryCountMap = new HashMap<>();
-
-        for (Summary summary : allSummaries) {
-            String departuredAt = summary.getReport().getDeparturedAt();
-            int month = extractMonth(departuredAt);
-            if (month == thisMonth) {
+        for (Integer reportId : reportIdsThisMonth) {
+            List<Summary> summaries = summaryRepository.findByReport_ReportId(reportId);
+            for (Summary summary : summaries) {
                 int scenarioType = summary.getScenarioType();
                 int summaryCount = summary.getSummaryCount();
                 summaryCountMap.put(scenarioType, summaryCountMap.getOrDefault(scenarioType, 0) + summaryCount);
             }
         }
 
-
+        // 요약 정보를 처리하여 상위 4개의 위험을 얻습니다.
         List<SummaryDto> topRisks = summaryCountMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(4)
@@ -121,6 +121,41 @@ public class FeedbackService {
         return FeedbackDto.topRisksResponse.builder()
                 .topRisks(topRisks)
                 .build();
+
+
+//        int reportItems = drivingService.reportItems();
+//        List<Summary> allSummaries = summaryRepository.findByReport_ReportId(reportItems);
+//
+//        Map<Integer, Integer> summaryCountMap = new HashMap<>();
+//
+//        for (Summary summary : allSummaries) {
+//            String departuredAt = summary.getReport().getDeparturedAt();
+//            int month = extractMonth(departuredAt);
+//            if (month == thisMonth) {
+//                int scenarioType = summary.getScenarioType();
+//                int summaryCount = summary.getSummaryCount();
+//                summaryCountMap.put(scenarioType, summaryCountMap.getOrDefault(scenarioType, 0) + summaryCount);
+//            }
+//        }
+//
+//
+//        List<SummaryDto> topRisks = summaryCountMap.entrySet().stream()
+//                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+//                .limit(4)
+//                .map(entry -> {
+//                    Optional<Scenario> optionalScenario = scenarioRepository.findById(entry.getKey());
+//                    Scenario scenario = optionalScenario.orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCENARIO_NOT_FOUND));
+//                    return SummaryDto.builder()
+//                            .scenarioType(entry.getKey())
+//                            .scenarioName(scenario.getName()) // scenarioName 추가
+//                            .scenarioCount(entry.getValue())
+//                            .build();
+//                })
+//                .toList();
+//
+//        return FeedbackDto.topRisksResponse.builder()
+//                .topRisks(topRisks)
+//                .build();
     }
 
     public FeedbackDto.cautionResponse getInternalExternalCautions(int thisMonth) {
