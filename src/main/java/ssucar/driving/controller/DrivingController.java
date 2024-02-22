@@ -4,17 +4,21 @@ package ssucar.driving.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import ssucar.driving.dto.DrivingDto;
 import ssucar.driving.entity.Report;
 import ssucar.driving.entity.Risk;
 import ssucar.driving.entity.Summary;
 import ssucar.driving.service.DrivingService;
 import ssucar.dto.SingleResponseDto;
+import ssucar.notification.service.NotificationService;
 import ssucar.utils.UriCreator;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 
 
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8080", "http://ssu-car.s3-website.ap-northeast-2.amazonaws.com" }, allowCredentials = "true")
@@ -25,6 +29,9 @@ public class DrivingController {
 
     @Autowired
     private DrivingService drivingService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/embedded")
     public ResponseEntity embedded(@RequestBody HashMap<String, Object> requestJsonHashMap) {
@@ -40,15 +47,14 @@ public class DrivingController {
                 drivingService.updateMileage(scenarioType, createdAt);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else if (scenarioType == 200){
-                // 속도 값 들어오는거 처리
 
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
+                //SSE로 내부 시나리오 상황일 때 값 보내기
+                notificationService.notify(1L, scenarioType);
                 Risk postRisk = drivingService.createRisk(scenarioType, createdAt);
-//            URI location = UriCreator.createUri(DRIVING_DEFAULT_URL, (long) postRisk.getRiskId());
                 Summary postSummary = drivingService.updateSummary(scenarioType);
                 return new ResponseEntity<>(HttpStatus.OK);
-//            return ResponseEntity.created(location).build();
             }
         }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -56,13 +62,13 @@ public class DrivingController {
 
     @PostMapping("/start")
     public ResponseEntity<?> postStartDriving(){
-
+        //SSE 통신 열어주기
         return new ResponseEntity<>(drivingService.startDriving(), HttpStatus.CREATED);
     }
 
     @PatchMapping("/end")
     public ResponseEntity<?> patchEndDriving(){
-
+        //SSE 통신 닫아주기
         return new ResponseEntity<>(drivingService.endDriving(), HttpStatus.OK);
     }
 

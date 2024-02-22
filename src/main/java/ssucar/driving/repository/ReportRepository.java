@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<Report, Integer> {
     List<Report> findTop3ByOrderByReportIdAsc();
     List<Report> findTop3ByOrderByReportIdDesc();
+
+    List<Report> findByOrderByReportIdDesc();
 }
