@@ -82,7 +82,7 @@ public class HomeService {
                 .toList();
 
 
-        if(drivingService.reportItems()<3) homeFeedback = "더 많은 주행 데이터를 쌓아 운전 습관 피드백을 받아보세요";
+        if(drivingService.reportItems()<3) homeFeedback = "더 많은 주행 데이터를 쌓아 운전 습관 피드백을 받아보세요🤗";
         else if(reportRepository.findAll().stream()
                 .sorted(Comparator.comparingInt(Report::getReportId).reversed())
                 .limit(3)
@@ -90,8 +90,8 @@ public class HomeService {
                 .flatMap(report -> report.getSummaries().stream()) // 각 Report의 Summary 리스트를 평면화
                 .filter(summary -> summary.getScenarioType() == 3) // scenarioType이 3인 것들만 필터링
                 .mapToInt(Summary::getSummaryCount) // summaryCount만 추출
-                .sum()>=2) homeFeedback = "졸음운전하다 영원히 잠듭니다..💀\n 졸음 쉼터를 잘 이용해봐요!";
-        else if(recentRisks.get(0).getScenarioCount()>10) homeFeedback = recentRisks.get(0).getScenarioName() + "는 특별히 더 주의가 필요해요🤔🤨";
+                .sum()>=2) homeFeedback = "졸음운전하다 영원히 잠듭니다..💀 \n 졸음 쉼터를 잘 이용해봐요!";
+        else if(recentRisks.get(0).getScenarioCount()>10) homeFeedback = recentRisks.get(0).getScenarioName() + "는 특별히 더 주의가 필요해요🤔";
         else if(latestReports.subList(0, Math.min(latestReports.size(), 3)).stream()
                 .anyMatch(report -> report.getScore() <= 50)) homeFeedback = "안전하게 운전하는게 베스트 드라이버!😡";
         return new HomeDto.feedbackResponse(homeFeedback);

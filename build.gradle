@@ -40,6 +40,15 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jar {
+tasks.jar {
 	enabled = false
 }
+
+tasks.bootJar {
+	enabled = true
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+//jar {
+//	enabled = false
+//}
