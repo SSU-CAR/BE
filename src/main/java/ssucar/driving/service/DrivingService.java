@@ -20,6 +20,8 @@ import ssucar.scenario.entity.Scenario;
 import ssucar.scenario.repository.ScenarioRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -55,8 +57,10 @@ public class DrivingService {
         if (!isDriving) {
             setDriving(true);
             // 이 시점에서 SSE 통신 열기
-            LocalDateTime currentTime = LocalDateTime.now();
-            String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime currentTime = LocalDateTime.now(); // UTC 시간대의 현재 시간
+            ZoneId zoneId = ZoneId.of("Asia/Seoul"); // 한국 시간대
+            LocalDateTime koreaTime = currentTime.atZone(ZoneOffset.UTC).withZoneSameInstant(zoneId).toLocalDateTime(); // 변환된 한국 시간
+            String parsedCurrentTime = koreaTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             Report newReport = Report.builder()
                     .departuredAt(parsedCurrentTime)
                     .arrivedAt(parsedCurrentTime)
@@ -133,7 +137,11 @@ public class DrivingService {
             Report report = findReport(reportItems);
 //            LocalDateTime currentTime = LocalDateTime.now();
 //            String parsedCurrentTime = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            report.setArrivedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            LocalDateTime currentTime = LocalDateTime.now(); // UTC 시간대의 현재 시간
+            ZoneId zoneId = ZoneId.of("Asia/Seoul"); // 한국 시간대
+            LocalDateTime koreaTime = currentTime.atZone(ZoneOffset.UTC).withZoneSameInstant(zoneId).toLocalDateTime(); // 변환된 한국 시간
+            report.setArrivedAt(koreaTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             // 주행거리 세팅
             if (report.getMileage() == 0) {
                 LocalDateTime departuredAt = LocalDateTime.parse(report.getDeparturedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
