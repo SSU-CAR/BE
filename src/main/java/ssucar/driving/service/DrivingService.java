@@ -145,7 +145,8 @@ public class DrivingService {
             // 주행거리 세팅
             if (report.getMileage() == 0) {
                 LocalDateTime departuredAt = LocalDateTime.parse(report.getDeparturedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                LocalDateTime arrivedAt = LocalDateTime.now();
+                LocalDateTime tmpTime = LocalDateTime.now();
+                LocalDateTime arrivedAt = tmpTime.atZone(ZoneOffset.UTC).withZoneSameInstant(zoneId).toLocalDateTime();
 
                 long minutes = ChronoUnit.MINUTES.between(departuredAt, arrivedAt);
 
