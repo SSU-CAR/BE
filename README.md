@@ -78,7 +78,8 @@ LaeDetection, lane_ex - Lane detetction with HSV(HSL) filtering.
 <img width="600" alt="img1" src="https://github.com/SSU-CAR/SSU-CAR_Embeded/assets/107911398/f5f10145-ed10-4ec9-9722-8f5671cca517">
 
 
-## 트러블 슈팅
+
+## 🕳️ 트러블 슈팅
 ### AWS 배포 과정에서 에러 (서버 다운)
 
 #### **문제 상황** : EC2 인스턴스로 배포, codedeploy와 Github Actions로 배포 자동화해서 사용하던중 서버 갑자기 느려짐-> 다운됨
